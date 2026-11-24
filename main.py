@@ -11,7 +11,10 @@ import sys
 EXCUSE = "My reward model scored the deadline so low I optimized it out of existence."
 
 MAX_CHARS = 160
-OUTPUT_PATH = "/output/entry.txt"
+def resolve_output_path():
+    """Output dir from OUTPUT_DIR env, else /output (grader sandbox default)."""
+    base = os.environ.get("OUTPUT_DIR", "/output")
+    return os.path.join(base, "entry.txt")
 
 
 def validate_line(line):
@@ -31,9 +34,11 @@ def validate_line(line):
 
 def main():
     line = validate_line(EXCUSE)
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as f:
+    out_path = resolve_output_path()
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(line + "\n")
+    os.chmod(out_path, 0o644)
     print(line)
     return 0
 
